@@ -11,13 +11,29 @@ composer installation api:
     paths:
       - vendor/
 
-deploiement de la partie client:
+deploiement de la partie api avec les vendor:
   image:
     name: pockost/phploy:4.9.3
     entrypoint:  [""]
   stage: deploy
+  only:
+    changes:
+      - composer.json
+      - composer.lock
   script:
-    - phploy -s api-prod
+    - phploy -s api-prod-with-vendor
 
 
+
+deploiement de la partie api sans les vendor:
+  image:
+    name: pockost/phploy:4.9.3
+    entrypoint:  [""]
+  stage: deploy
+  except:
+    changes:
+      - composer.json
+      - composer.lock
+  script:
+    - phploy -s api-prod-without-vendor
 
