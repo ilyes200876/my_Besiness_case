@@ -12,7 +12,9 @@ composer installation api:
       - vendor/
 
 deploiement de la partie client:
-  image: pockost/phploy:4.9.3
+  image:
+    name: pockost/phploy:4.9.3
+    entrypoint:  [""]
   stage: deploy
   script:
     - phploy -s api-prod
