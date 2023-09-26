@@ -5,6 +5,11 @@ stages:
 composer installation api:
   image: pockost/php:8.2-cli-bookworm
   stage: construction
+  only:
+    changes:
+      - composer.json
+      - composer.lock
+
   script:
     - composer install --no-scripts --no-dev --optimize-autoloader --no-interaction
   artifacts:
