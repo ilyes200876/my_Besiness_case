@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: NftRepository::class)]
 class Nft
@@ -14,22 +15,39 @@ class Nft
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['allUsers','oneUser', 'allNfts', 'oneNft'])]
     private ?int $id = null;
 
     #[ORM\Column]
+    #[Groups(['allUsers','oneUser', 'allNfts', 'oneNft'])]
     private ?int $price = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Groups(['allUsers','oneUser', 'allNfts', 'oneNft'])]
     private ?\DateTimeInterface $createdAt = null;
-
-    #[ORM\ManyToOne(inversedBy: 'nfts')]
+    #[ORM\ManyToOne(inversedBy: 'nfts', )]
+    #[Groups(['allNfts', 'oneNft'])]
     private ?User $user = null;
 
-    #[ORM\ManyToOne(inversedBy: 'nfts')]
-    private ?Media $media = null;
 
     #[ORM\ManyToMany(targetEntity: SubCategory::class, inversedBy: 'nfts')]
+    #[Groups(['allNfts', 'oneNft'])]
     private Collection $subCategories;
+
+    #[ORM\Column(length: 255)]
+    private ?string $title = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $src = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $weight = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $format = null;
+
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $description = null;
 
     public function __construct()
     {
@@ -78,17 +96,6 @@ class Nft
         return $this;
     }
 
-    public function getMedia(): ?Media
-    {
-        return $this->media;
-    }
-
-    public function setMedia(?Media $media): static
-    {
-        $this->media = $media;
-
-        return $this;
-    }
 
     /**
      * @return Collection<int, SubCategory>
@@ -110,6 +117,66 @@ class Nft
     public function removeSubCategory(SubCategory $subCategory): static
     {
         $this->subCategories->removeElement($subCategory);
+
+        return $this;
+    }
+
+    public function getTitle(): ?string
+    {
+        return $this->title;
+    }
+
+    public function setTitle(string $title): static
+    {
+        $this->title = $title;
+
+        return $this;
+    }
+
+    public function getSrc(): ?string
+    {
+        return $this->src;
+    }
+
+    public function setSrc(string $src): static
+    {
+        $this->src = $src;
+
+        return $this;
+    }
+
+    public function getWeight(): ?int
+    {
+        return $this->weight;
+    }
+
+    public function setWeight(?int $weight): static
+    {
+        $this->weight = $weight;
+
+        return $this;
+    }
+
+    public function getFormat(): ?string
+    {
+        return $this->format;
+    }
+
+    public function setFormat(?string $format): static
+    {
+        $this->format = $format;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(string $description): static
+    {
+        $this->description = $description;
 
         return $this;
     }

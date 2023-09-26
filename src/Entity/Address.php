@@ -2,13 +2,13 @@
 
 namespace App\Entity;
 
-use App\Repository\AdresseRepository;
+use App\Repository\AddressRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: AdresseRepository::class)]
-class Adresse
+#[ORM\Entity(repositoryClass: AddressRepository::class)]
+class Address
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -27,7 +27,7 @@ class Adresse
     #[ORM\Column(length: 255)]
     private ?string $country = null;
 
-    #[ORM\OneToMany(mappedBy: 'adresse', targetEntity: User::class)]
+    #[ORM\OneToMany(mappedBy: 'address', targetEntity: User::class)]
     private Collection $users;
 
     public function __construct()
@@ -100,7 +100,7 @@ class Adresse
     {
         if (!$this->users->contains($user)) {
             $this->users->add($user);
-            $user->setAdresse($this);
+            $user->setAddress($this);
         }
 
         return $this;
@@ -110,8 +110,8 @@ class Adresse
     {
         if ($this->users->removeElement($user)) {
             // set the owning side to null (unless already changed)
-            if ($user->getAdresse() === $this) {
-                $user->setAdresse(null);
+            if ($user->getAddress() === $this) {
+                $user->setAddress(null);
             }
         }
 

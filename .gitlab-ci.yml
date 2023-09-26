@@ -1,0 +1,19 @@
+stages:
+  - deploy
+
+composer installation api:
+  image: pockost/php:8.2-cli-bookworm
+  script:
+    - composer install --no-scripts --no-dev --optimize-autoloader --no-interaction
+  artifacts:
+    paths:
+      - vendor/
+
+deploiement de la partie client:
+  image: pockost/phploy:4.9.3
+  stage: deploy
+  script:
+    - phploy -s api-prod
+
+
+

@@ -9,6 +9,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
@@ -16,12 +17,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['allUsers','oneUser'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
+    #[Groups(['allUsers','oneUser'])]
     private ?string $email = null;
 
     #[ORM\Column]
+    #[Groups(['allUsers','oneUser'])]
     private array $roles = [];
 
     /**
@@ -31,28 +35,35 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $password = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['allUsers','oneUser'])]
     private ?string $gender = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['allUsers','oneUser'])]
     private ?string $firstName = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['allUsers','oneUser'])]
     private ?string $lastName = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['allUsers','oneUser', 'allNfts', 'oneNft'])]
     private ?string $nickname = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[Groups(['allUsers','oneUser'])]
     private ?\DateTimeInterface $birthDate = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['allUsers','oneUser'])]
     private ?bool $isOwner = null;
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Nft::class)]
+    #[Groups(['allUsers','oneUser'])]
     private Collection $nfts;
 
     #[ORM\ManyToOne(inversedBy: 'users')]
-    private ?Adresse $adresse = null;
+    private ?Address $address = null;
 
     public function __construct()
     {
@@ -231,14 +242,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getAdresse(): ?Adresse
+    public function getAddress(): ?Address
     {
-        return $this->adresse;
+        return $this->address;
     }
 
-    public function setAdresse(?Adresse $adresse): static
+    public function setAddress(?Address $address): static
     {
-        $this->adresse = $adresse;
+        $this->address = $address;
 
         return $this;
     }
