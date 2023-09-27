@@ -20,6 +20,7 @@ composer des composant JS de l api:
   image: node:18
   stage: construction
   script:
+    - npm install
     - npm run build
   artifacts:
     paths:
