@@ -16,6 +16,15 @@ composer installation api:
     paths:
       - vendor/
 
+composer des composant JS de l api:
+  image: node:18
+  stage: construction
+  script:
+    - npm run build
+  artifacts:
+    paths:
+      - public/build/
+
 deploiement de la partie api avec les vendor:
   image:
     name: pockost/phploy:4.9.3
