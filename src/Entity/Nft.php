@@ -34,18 +34,23 @@ class Nft
     #[Groups(['allNfts', 'oneNft'])]
     private Collection $subCategories;
 
+    #[Groups(['allNfts', 'oneNft'])]
     #[ORM\Column(length: 255)]
     private ?string $title = null;
 
+    #[Groups(['allNfts', 'oneNft'])]
     #[ORM\Column(length: 255)]
     private ?string $src = null;
 
+    #[Groups(['allNfts', 'oneNft'])]
     #[ORM\Column(nullable: true)]
     private ?int $weight = null;
 
+    #[Groups(['allNfts', 'oneNft'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $format = null;
 
+    #[Groups(['allNfts', 'oneNft'])]
     #[ORM\Column(type: Types::TEXT)]
     private ?string $description = null;
 
