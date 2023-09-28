@@ -3,57 +3,79 @@
 namespace App\Controller;
 
 use App\Entity\SubCategory;
+use App\Form\SubCategoryType;
 use App\Repository\SubCategoryRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route('/api/subCategory')]
+#[Route('/sub/category')]
 class SubCategoryController extends AbstractController
 {
-    public function __construct(
-        private SubCategoryRepository $subCategoryRepository,
-        private EntityManagerInterface $entityManager
-    ){}
-
-    #[Route('/', name: 'app_subCategogy_all')]
-    public function index(): Response
+    #[Route('/', name: 'app_sub_category_index', methods: ['GET'])]
+    public function index(SubCategoryRepository $subCategoryRepository): Response
     {
-        
-        $subCategories = $this->entityManager->$this->subCategoryRepository->getAll();
-
-        return $this->json($subCategories);
-        
+        return $this->render('sub_category/index.html.twig', [
+            'sub_categories' => $subCategoryRepository->findAll(),
+        ]);
     }
 
-    #[Route('/show/{id}', name: 'app_subCategogy_show')]
-    public function show(int $id): Response
+    #[Route('/new', name: 'app_sub_category_new', methods: ['GET', 'POST'])]
+    public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $subCategory = $this->entityManager->$this->subCategoryRepository->find($id);
+        $subCategory = new SubCategory();
+        $form = $this->createForm(SubCategoryType::class, $subCategory);
+        $form->handleRequest($request);
 
-        return $this->json($subCategory);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($subCategory);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('app_sub_category_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->render('sub_category/new.html.twig', [
+            'sub_category' => $subCategory,
+            'form' => $form,
+        ]);
     }
-    
-    #[Route('/add/', name: 'app_subCategory_add')]
-    public function add()
+
+    #[Route('/{id}', name: 'app_sub_category_show', methods: ['GET'])]
+    public function show(SubCategory $subCategory): Response
     {
-
+        return $this->render('sub_category/show.html.twig', [
+            'sub_category' => $subCategory,
+        ]);
     }
-    
 
-    #[Route('/update/{id}', name: 'app_subCategory_update')]
-    public function update()
+    #[Route('/{id}/edit', name: 'app_sub_category_edit', methods: ['GET', 'POST'])]
+    public function edit(Request $request, SubCategory $subCategory, EntityManagerInterface $entityManager): Response
     {
+        $form = $this->createForm(SubCategoryType::class, $subCategory);
+        $form->handleRequest($request);
 
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->flush();
+
+            return $this->redirectToRoute('app_sub_category_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->render('sub_category/edit.html.twig', [
+            'sub_category' => $subCategory,
+            'form' => $form,
+        ]);
     }
 
-    #[Route('/delete/{id}', name: 'app_subCategory_delete')]
-    public function delete(SubCategory $subCategory): JsonResponse {
-        $this->entityManager->remove($subCategory);
-        $this->entityManager->flush();
-        return $this->json("subCategory deleated", 204);
-    }
+    #[Route('/{id}', name: 'app_sub_category_delete', methods: ['POST'])]
+    public function delete(Request $request, SubCategory $subCategory, EntityManagerInterface $entityManager): Response
+    {
+        if ($this->isCsrfTokenValid('delete'.$subCategory->getId(), $request->request->get('_token'))) {
+            $entityManager->remove($subCategory);
+            $entityManager->flush();
+        }
 
+        return $this->redirectToRoute('app_sub_category_index', [], Response::HTTP_SEE_OTHER);
+    }
 }

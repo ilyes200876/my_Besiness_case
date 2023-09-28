@@ -13,7 +13,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 
 #[Route('/api/user')]
-class UserController extends AbstractController
+class ApiUserController extends AbstractController
 {
     public function __construct(
         private UserRepository $userRepository,
