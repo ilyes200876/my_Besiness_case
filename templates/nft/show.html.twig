@@ -8,8 +8,12 @@
     <table class="table">
         <tbody>
             <tr>
-                <th>Id</th>
-                <td>{{ nft.id }}</td>
+                <th>Cover</th>
+            {% if (nft.src) == null %}
+                <td><img class="rounded mx-auto d-block" src="{{ asset('uploads/images/default.jpg') }}" alt="default picture"></td>
+            {% else %}
+                <td><img class="rounded mx-auto d-block" src="{{ asset('uploads/images/' ~nft.src) }}" alt="Nft picture"></td>
+            {% endif %}
             </tr>
             <tr>
                 <th>Price</th>

@@ -16,7 +16,7 @@ class TestApiController extends AbstractController
         //     'controller_name' => 'TestApiController',
         // ]);
         $user = $this->getUser();
-        dd($user);
+        // dd($user);
         if($user === null) {
             return $this->json('pas connecté');
         }else{

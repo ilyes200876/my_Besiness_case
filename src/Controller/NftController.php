@@ -5,11 +5,14 @@ namespace App\Controller;
 use App\Entity\Nft;
 use App\Form\NftType;
 use App\Repository\NftRepository;
+use App\Service\FileUploader;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 #[Route('/nft')]
 class NftController extends AbstractController
@@ -23,13 +26,21 @@ class NftController extends AbstractController
     }
 
     #[Route('/new', name: 'app_nft_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    public function new(Request $request, EntityManagerInterface $entityManager, FileUploader $fileUploader): Response
     {
         $nft = new Nft();
         $form = $this->createForm(NftType::class, $nft);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $pictureFile = $form->get('picture')->getData();
+
+            if ($pictureFile) {
+                
+                $pictureFileName = $fileUploader->upload($pictureFile);
+                $nft->setSrc($pictureFileName);
+
+            }
             $entityManager->persist($nft);
             $entityManager->flush();
 
@@ -51,12 +62,20 @@ class NftController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_nft_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Nft $nft, EntityManagerInterface $entityManager): Response
+    public function edit(Request $request, Nft $nft, EntityManagerInterface $entityManager, FileUploader $fileUploader): Response
     {
         $form = $this->createForm(NftType::class, $nft);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $pictureFile = $form->get('picture')->getData();
+
+            if ($pictureFile) {
+                $pictureFileName = $fileUploader->upload($pictureFile);
+                $nft->setSrc($pictureFileName);
+            }
+            
+            
             $entityManager->flush();
 
             return $this->redirectToRoute('app_nft_index', [], Response::HTTP_SEE_OTHER);

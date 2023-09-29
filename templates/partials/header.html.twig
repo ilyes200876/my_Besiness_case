@@ -1,6 +1,13 @@
 <nav class="navbar navbar-expand-lg bg-body-tertiary">
   <div class="container-fluid">
     <a class="navbar-brand" href="{{ path('app_home') }}">Home</a>
+    {% if app.user %}
+      <a class="navbar-brand" href="{{ path('app_nft_index') }}">NFT</a>
+      <a class="navbar-brand" href="{{ path('app_user_index') }}">Utilisateurs</a>
+      <a class="navbar-brand" href="{{ path('app_category_index') }}">Catégories</a>
+      <a class="navbar-brand" href="{{ path('app_sub_category_index') }}">Sous-catégories</a>
+      <a class="navbar-brand" href="{{ path('app_address_index') }}">Adresses</a>
+    {% endif %}  
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>

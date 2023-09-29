@@ -70,22 +70,6 @@ class ApiNftController extends AbstractController
 
         return $this->json("Nft Added with Success", 201);
     }
-
-    // #[Route('/add', name: 'app_nft_add', methods: 'POST')]
-    // public function add(Request $request, EntityManagerInterface $entityManager): Response {
-
-    //     // $data = json_decode($request->getContent(), true);
-
-    //     dd("aaa");
-
-
-    //     $nft = new Nft();
-
-    //     $entityManager->persist($nft);
-    //     $entityManager->flush();
-
-    //     return new Response('C\'est envoyer !');
-    // }
     
 
     #[Route('/update/{id}', name: 'app_nft_update', methods: 'PUT')]
