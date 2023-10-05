@@ -25,7 +25,7 @@ class ApiNftController extends AbstractController
         private EntityManagerInterface $entityManager
     ){}
 
-    #[Route('/', name: 'app_nft_all', methods: 'GET')]
+    #[Route('/', name: 'app_nft_all', methods: ['GET'])]
     public function index(): Response
     {
         
@@ -35,7 +35,7 @@ class ApiNftController extends AbstractController
         
     }
 
-    #[Route('/show/{id}', name: 'app_nft_show', methods: 'GET')]
+    #[Route('/show/{id}', name: 'app_nft_show', methods: ['GET'])]
     public function show(int $id): Response
     {
         $nft = $this->nftRepository->find($id);

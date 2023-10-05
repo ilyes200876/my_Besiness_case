@@ -3,10 +3,12 @@
 namespace App\Controller\Api;
 
 use App\Entity\SubCategory;
+use App\Entity\Category;
 use App\Repository\SubCategoryRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -18,7 +20,7 @@ class ApiSubCategoryController extends AbstractController
         private EntityManagerInterface $entityManager
     ){}
 
-    #[Route('/', name: 'app_subCategogy_all')]
+    #[Route('/', name: 'app_subCategogy_all', methods: ['GET'])]
     public function index(): Response
     {
         
@@ -28,7 +30,7 @@ class ApiSubCategoryController extends AbstractController
         
     }
 
-    #[Route('/show/{id}', name: 'app_subCategogy_show')]
+    #[Route('/show/{id}', name: 'app_subCategogy_show', methods: ['GET'])]
     public function show(int $id): Response
     {
         $subCategory = $this->entityManager->$this->subCategoryRepository->find($id);
@@ -36,20 +38,37 @@ class ApiSubCategoryController extends AbstractController
         return $this->json($subCategory);
     }
     
-    #[Route('/add/', name: 'app_subCategory_add')]
-    public function add()
+    #[Route('/add', name: 'app_subCategory_add', methods: ['POST'])]
+    public function add(Request $request)
     {
+        $data = json_decode($request->getContent(), true);
+
+        $subCategory = new SubCategory();
+
+        $subCategory->setSubCategoryName($data['subCategoryName']);
+        // dd($subCategory);
+        $category = $data['category->getId()'];
+        dd($category);
+        // $category = $this->getDoctrine()->getRepository(Category::class)->find($categoryId);
+        // if (!$category) {
+        //     return new JsonResponse(['message' => 'La catégorie avec l\'ID donné n\'a pas été trouvée.'], 404);
+        // }
+    
+        // Associez la catégorie à la sous-catégorie
+        $subCategory->setCategory($category);
+        // $subCategory->setCategory($data['category']);
+        dd($subCategory);
 
     }
     
 
-    #[Route('/update/{id}', name: 'app_subCategory_update')]
+    #[Route('/update/{id}', name: 'app_subCategory_update', methods: ['EDIT'])]
     public function update()
     {
 
     }
 
-    #[Route('/delete/{id}', name: 'app_subCategory_delete')]
+    #[Route('/delete/{id}', name: 'app_subCategory_delete', methods: ['DELETE'])]
     public function delete(SubCategory $subCategory): JsonResponse {
         $this->entityManager->remove($subCategory);
         $this->entityManager->flush();
