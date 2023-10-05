@@ -57,6 +57,13 @@ class ApiUserController extends AbstractController
     {
         $data = json_decode($request->getContent(), true);
 
+        $user = new User();
+        $user->setEmail($data["email"]);
+        $user->setEmail($data["birthDate"]);
+        $user->setEmail($data["nickName"]);
+        $user->setEmail($data["password"]);
+        
+
     }
 
     #[Route('/delete/{id}', name: 'app_user_delete')]

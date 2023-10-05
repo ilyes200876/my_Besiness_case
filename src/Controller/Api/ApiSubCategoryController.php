@@ -43,15 +43,24 @@ class ApiSubCategoryController extends AbstractController
     public function add(Request $request, CategoryRepository $categoryRepository)
     {
         $data = json_decode($request->getContent(), true);
+
+        $categoryId = $data["categoryId"];
+        $category = $categoryRepository->find($categoryId);
         
         $subCategory = new SubCategory();
-        $category = $categoryRepository->findBy(["id" => $data["category"]]);
+        
         
         $subCategory->setSubCategoryName($data['subCategoryName']);
-        $subCategory->setCategory($category[0]);
+        $subCategory->setCategory($category);
 
-        $this->entityManager->persist($subCategory);
-        $this->entityManager->flush();
+        try{
+            $this->entityManager->persist($subCategory);
+            $this->entityManager->flush();
+            return $this->json('added with success', 201);
+        }
+        catch(\Exception $e){
+            return $this->json($e, 400);
+        }
         
 
     }
