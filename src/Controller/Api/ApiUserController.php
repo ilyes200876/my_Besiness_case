@@ -53,8 +53,9 @@ class ApiUserController extends AbstractController
     
 
     #[Route('/update/{id}', name: 'app_user_update')]
-    public function update()
+    public function update(Request $request)
     {
+        $data = json_decode($request->getContent(), true);
 
     }
 

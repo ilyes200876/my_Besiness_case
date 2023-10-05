@@ -4,6 +4,7 @@ namespace App\Controller\Api;
 
 use App\Entity\SubCategory;
 use App\Entity\Category;
+use App\Repository\CategoryRepository;
 use App\Repository\SubCategoryRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -39,25 +40,19 @@ class ApiSubCategoryController extends AbstractController
     }
     
     #[Route('/add', name: 'app_subCategory_add', methods: ['POST'])]
-    public function add(Request $request)
+    public function add(Request $request, CategoryRepository $categoryRepository)
     {
         $data = json_decode($request->getContent(), true);
-
+        
         $subCategory = new SubCategory();
-
+        $category = $categoryRepository->findBy(["id" => $data["category"]]);
+        
         $subCategory->setSubCategoryName($data['subCategoryName']);
-        // dd($subCategory);
-        $category = $data['category->getId()'];
-        dd($category);
-        // $category = $this->getDoctrine()->getRepository(Category::class)->find($categoryId);
-        // if (!$category) {
-        //     return new JsonResponse(['message' => 'La catégorie avec l\'ID donné n\'a pas été trouvée.'], 404);
-        // }
-    
-        // Associez la catégorie à la sous-catégorie
-        $subCategory->setCategory($category);
-        // $subCategory->setCategory($data['category']);
-        dd($subCategory);
+        $subCategory->setCategory($category[0]);
+
+        $this->entityManager->persist($subCategory);
+        $this->entityManager->flush();
+        
 
     }
     
