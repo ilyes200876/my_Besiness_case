@@ -24,19 +24,19 @@ class ApiSubCategoryController extends AbstractController
     #[Route('/', name: 'app_subCategogy_all', methods: ['GET'])]
     public function index(): Response
     {
-        
-        $subCategories = $this->entityManager->$this->subCategoryRepository->getAll();
+        $subCategories = $this->subCategoryRepository->findAll();
 
-        return $this->json($subCategories);
+        return $this->json($subCategories, 200, [], ['groups' => 'allSubCategories']);
+        
         
     }
 
     #[Route('/show/{id}', name: 'app_subCategogy_show', methods: ['GET'])]
     public function show(int $id): Response
     {
-        $subCategory = $this->entityManager->$this->subCategoryRepository->find($id);
+        $subCategory = $this->subCategoryRepository->find($id);
 
-        return $this->json($subCategory);
+        return $this->json($subCategory, 200, [], ['groups' => 'oneSubCategory']);
     }
     
     #[Route('/add', name: 'app_subCategory_add', methods: ['POST'])]
@@ -56,7 +56,7 @@ class ApiSubCategoryController extends AbstractController
         try{
             $this->entityManager->persist($subCategory);
             $this->entityManager->flush();
-            return $this->json('added with success', 201);
+            return $this->json('SubCategory added with success', 201);
         }
         catch(\Exception $e){
             return $this->json($e, 400);

@@ -3,6 +3,8 @@
 namespace App\Controller\Api;
 
 use App\Entity\User;
+use App\Repository\AddressRepository;
+use App\Repository\NftRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -20,7 +22,7 @@ class ApiUserController extends AbstractController
         private EntityManagerInterface $entityManager
     ){}
 
-    #[Route('/', name: 'app_user_all')]
+    #[Route('/', name: 'app_user_all', methods: ['GET'])]
     public function index(): Response
     {
         $users = $this->userRepository->findAll();
@@ -29,7 +31,7 @@ class ApiUserController extends AbstractController
         
     }
 
-    #[Route('/show/{id}', name: 'app_user_one')]
+    #[Route('/show/{id}', name: 'app_user_show', methods: ['GET'])]
     public function show(int $id): Response
     {
         $user = $this->userRepository->find($id);
@@ -38,35 +40,50 @@ class ApiUserController extends AbstractController
     }
 
     
-    #[Route('/add/', name: 'app_user_add')]
-    public function add(Request $request, SerializerInterface $serializer): JsonResponse {
-        try {
-            $user = $serializer->deserialize($request->getContent(), User::class, 'json');
-        } catch (\Exception $e) {
-            return $this->json('Invalid Body', 400);
-        }
+    #[Route('/add', name: 'app_user_add', methods: ['POST'])]
+    public function add(Request $request, SerializerInterface $serializer, NftRepository $nftRepository, AddressRepository $addressRepository): JsonResponse {
+        $data = json_decode($request->getContent(), true);
 
-        $this->entityManager->persist($user);
-        $this->entityManager->flush();
-        return $this->json($user, 201);
+        $address = $addressRepository->find($data["address"]);
+
+        $user = new User();
+        $user->setFirstName($data["firstName"]);
+        $user->setLastName($data["lastName"]);
+        $user->setGender($data["gender"]);
+        $user->setEmail($data["email"]);
+        $user->setBirthDate(new \DateTime($data["birthDate"]));
+        $user->setNickname($data["nickname"]);
+        $user->setPassword($data["password"]);
+        
+        $user->setAddress($address);
+        $nfts = [];
+        for($i = 0; $i < count($data["nfts"]); $i++){
+            $nfts[] = $nftRepository->findBy(["id" => $data["nfts"][$i]]);
+            $user->addNft($nfts[$i][0]);
+        }
+        $roles = $data["roles"];
+        $user->setRoles($roles);
+        
+        try{
+            $this->entityManager->persist($user);
+            $this->entityManager->flush();
+            return $this->json("User added with success", 201);
+        }
+        catch(\Exception $e){
+            return $this->json($e, 400);
+        }
     }
     
 
-    #[Route('/update/{id}', name: 'app_user_update')]
-    public function update(Request $request)
+    #[Route('/update/{id}', name: 'app_user_update', methods: ['UPDATE'])]
+    public function update()
     {
-        $data = json_decode($request->getContent(), true);
-
-        $user = new User();
-        $user->setEmail($data["email"]);
-        $user->setEmail($data["birthDate"]);
-        $user->setEmail($data["nickName"]);
-        $user->setEmail($data["password"]);
         
+
 
     }
 
-    #[Route('/delete/{id}', name: 'app_user_delete')]
+    #[Route('/delete/{id}', name: 'app_user_delete', methods: ['DELETE'])]
     public function delete(User $user): JsonResponse {
         $this->entityManager->remove($user);
         $this->entityManager->flush();

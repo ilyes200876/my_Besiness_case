@@ -24,18 +24,18 @@ class ApiCategoryController extends AbstractController
     public function index(): Response
     {
         
-        $categories = $this->entityManager->$this->categoryRepository->getAll();
+        $categories = $this->categoryRepository->findAll();
 
-        return $this->json($categories);
+        return $this->json($categories, 200, [], ['groups' => 'allCategories']);
         
     }
 
     #[Route('/show/{id}', name: 'app_categogy_show')]
     public function show(int $id): Response
     {
-        $category = $this->entityManager->$this->categoryRepository->find($id);
+        $category = $this->categoryRepository->find($id);
 
-        return $this->json($category);
+        return $this->json($category, 200, [], ['groups' => 'oneCategory']);
     }
     
     #[Route('/add', name: 'app_category_add', methods: ['POST'])]
@@ -46,11 +46,16 @@ class ApiCategoryController extends AbstractController
         
         $category = new Category();
         $category->setCategoryName($data["categoryName"]);
-        $this->entityManager->persist($category);
-        $this->entityManager->flush();
-
-        return $this->json("Nft Added with Success", 201);
-
+        
+        try{
+            $this->entityManager->persist($category);
+            $this->entityManager->flush();
+            return $this->json("Category Added with Success", 201);
+        }
+        catch(\Exception $e){
+            return $this->json($e, 400);
+        }
+        
     }
     
 

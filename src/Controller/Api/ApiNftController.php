@@ -28,24 +28,24 @@ class ApiNftController extends AbstractController
     #[Route('/', name: 'app_nft_all', methods: ['GET'])]
     public function index(): Response
     {
-        
-        $nfts = $this->nftRepository->findAll();
+      
+      $nfts = $this->nftRepository->findAll();
 
-        return $this->json($nfts, 200, [], ['groups' => 'allNfts']);
+      return $this->json($nfts, 200, [], ['groups' => 'allNfts']);
         
     }
 
     #[Route('/show/{id}', name: 'app_nft_show', methods: ['GET'])]
     public function show(int $id): Response
     {
-        $nft = $this->nftRepository->find($id);
+      $nft = $this->nftRepository->find($id);
 
-        return $this->json($nft, 200, [], ['groups' => 'oneNft']);
+      return $this->json($nft, 200, [], ['groups' => 'oneNft']);
     }
 
     #[Route('/add', name: 'app_nft_add', methods: ['POST'])]
-    public function add(Request $request, SerializerInterface $serializer , UserRepository $userRepository,SubCategoryRepository $subCategoryRepository): JsonResponse {
-
+    public function add(Request $request, SerializerInterface $serializer , UserRepository $userRepository,SubCategoryRepository $subCategoryRepository): JsonResponse 
+    {
       $data = json_decode($request->getContent(), true);
 
       $user = $userRepository->find($data["user"]);
@@ -65,20 +65,25 @@ class ApiNftController extends AbstractController
           $subCategories[] = $subCategoryRepository->findBy(["id" => $data["subCategories"][$i]]);
           $nft->addSubCategory($subCategories[$i][0]);
         }
-        $this->entityManager->persist($nft);
-        $this->entityManager->flush();
 
-        return $this->json("Nft Added with Success", 201);
+        try{
+          $this->entityManager->persist($nft);
+          $this->entityManager->flush();
+          return $this->json("Nft Added with Success", 201);
+      }
+      catch(\Exception $e){
+          return $this->json($e, 400);
+      }
     }
     
 
-    #[Route('/update/{id}', name: 'app_nft_update', methods: 'PUT')]
+    #[Route('/update/{id}', name: 'app_nft_update', methods: ['UPDATE'])]
     public function update()
     {
 
     }
 
-    #[Route('/delete/{id}', name: 'app_nft_delete', methods: 'DELETE')]
+    #[Route('/delete/{id}', name: 'app_nft_delete', methods: ['DELETE'])]
     public function delete(Nft $nft): JsonResponse {
         $this->entityManager->remove($nft);
         $this->entityManager->flush();

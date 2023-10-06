@@ -15,15 +15,15 @@ class Nft
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['allUsers','oneUser', 'allNfts', 'oneNft'])]
+    #[Groups(['allUsers','oneUser', 'allNfts', 'oneNft', 'allCategories', 'oneSubCategory'])]
     private ?int $id = null;
 
     #[ORM\Column]
-    #[Groups(['allUsers','oneUser', 'allNfts', 'oneNft'])]
+    #[Groups(['allUsers','oneUser', 'allNfts', 'oneNft', 'allCategories', 'oneSubCategory'])]
     private ?int $price = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    #[Groups(['allUsers','oneUser', 'allNfts', 'oneNft'])]
+    #[Groups(['allUsers','oneUser', 'allNfts', 'oneNft', 'allCategories', 'oneSubCategory'])]
     private ?\DateTimeInterface $createdAt = null;
     #[ORM\ManyToOne(inversedBy: 'nfts', )]
     #[Groups(['allNfts', 'oneNft'])]
@@ -35,23 +35,23 @@ class Nft
     private Collection $subCategories;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['allNfts', 'oneNft'])]
+    #[Groups(['allNfts', 'oneNft', 'allSubCategories', 'oneSubCategory'])]
     private ?string $title = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['allNfts', 'oneNft'])]
+    #[Groups(['allNfts', 'oneNft', 'allCategories', 'oneSubCategory'])]
     private ?string $src = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups(['allNfts', 'oneNft'])]
+    #[Groups(['allNfts', 'oneNft', 'allCategories', 'oneSubCategory'])]
     private ?int $weight = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['allNfts', 'oneNft'])]
+    #[Groups(['allNfts', 'oneNft', 'allCategories', 'oneSubCategory'])]
     private ?string $format = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Groups(['allNfts', 'oneNft'])]
+    #[Groups(['allNfts', 'oneNft', 'allCategories', 'oneSubCategory'])]
     private ?string $description = null;
 
     public function __construct()
