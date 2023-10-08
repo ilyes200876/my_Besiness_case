@@ -11,6 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\PasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 
@@ -40,8 +41,8 @@ class ApiUserController extends AbstractController
     }
 
     
-    #[Route('/add', name: 'app_user_add', methods: ['POST'])]
-    public function add(Request $request, SerializerInterface $serializer, NftRepository $nftRepository, AddressRepository $addressRepository): JsonResponse {
+    #[Route('/add', name: 'app_add_user', methods: ['POST'])]
+    public function add(Request $request, SerializerInterface $serializer, NftRepository $nftRepository, PasswordHasherInterface $passwordHasher, AddressRepository $addressRepository): JsonResponse {
         $data = json_decode($request->getContent(), true);
 
         $address = $addressRepository->find($data["address"]);
@@ -53,7 +54,9 @@ class ApiUserController extends AbstractController
         $user->setEmail($data["email"]);
         $user->setBirthDate(new \DateTime($data["birthDate"]));
         $user->setNickname($data["nickname"]);
-        $user->setPassword($data["password"]);
+        $password = $passwordHasher->hash($data["password"]);
+        $user->setPassword($password);
+        
         
         $user->setAddress($address);
         $nfts = [];

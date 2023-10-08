@@ -53,7 +53,7 @@ class NftController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_nft_show', methods: ['GET'])]
+    #[Route('/{id}', methods: ['GET'])]
     public function show(Nft $nft): Response
     {
         return $this->render('nft/show.html.twig', [

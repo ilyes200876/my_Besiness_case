@@ -36,7 +36,7 @@ class ApiNftController extends AbstractController
         
     }
 
-    #[Route('/show/{id}', name: 'app_nft_show', methods: ['GET'])]
+    #[Route('/show/{id}', name: 'app_show_nft', methods: ['GET'])]
     public function show(int $id): Response
     {
       $nft = $this->nftRepository->find($id);
@@ -44,7 +44,7 @@ class ApiNftController extends AbstractController
     }
 
     #[IsGranted("Role_User")]
-    #[Route('/add', name: 'app_nft_add', methods: ['POST'])]
+    #[Route('/add', name: 'app_add_nft', methods: ['POST'])]
     public function add(Request $request, SerializerInterface $serializer , UserRepository $userRepository,SubCategoryRepository $subCategoryRepository): JsonResponse 
     {
       $data = json_decode($request->getContent(), true);
@@ -78,7 +78,7 @@ class ApiNftController extends AbstractController
     }
     
 
-    #[Security("is_granted('ROLE_USER' and user === nft.getUser()")]
+    // #[Security("is_granted('ROLE_USER' and user === nft.getUser())")]
     #[Route('/update/{id}', name: 'app_nft_update', methods: ['PUT'])]
     public function update(int $id, Request $request,NftRepository $nftRepository, UserRepository $userRepository, SubCategoryRepository $subCategoryRepository)
     {
@@ -110,7 +110,7 @@ class ApiNftController extends AbstractController
 
     }
 
-    #[Security("is_granted('ROLE_USER' and user === nft.getUser()")]
+    // #[Security("is_granted('ROLE_USER' and user === nft.getUser()")]
     #[Route('/delete/{id}', name: 'app_nft_delete', methods: ['DELETE'])]
     public function delete(Nft $nft): JsonResponse {
         $this->entityManager->remove($nft);
