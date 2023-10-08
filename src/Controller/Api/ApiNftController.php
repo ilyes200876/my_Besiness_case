@@ -83,8 +83,23 @@ class ApiNftController extends AbstractController
     public function update(int $id, Request $request,NftRepository $nftRepository, UserRepository $userRepository, SubCategoryRepository $subCategoryRepository)
     {
       $data = json_decode($request->getContent(), true);
-      $nft = $nftRepository->find($id);
-      $user = $userRepository->find($data["user"]);
+      $nft = $nftRepository->find($data["nft_id"]);
+      $user = $nftRepository->getUser();
+      $userConnecté = $userRepository->find($data["user_id"]);
+
+//       $nft = $nftRepository->find($data["nft_id"]);
+// $user = $nftRepository->getUser();
+      $userConnecté = $userRepository->find($data["user_id"]);
+
+      $userRoles = $userConnecté->getRoles();
+
+      if($user == $userConnecté || in_array("ROLE_ADMIN" , $userRoles)){
+
+// modifie l nft 
+      }else{
+return une erreur }
+// alors l'user doit etre soit an admin soit le propriété de la nft
+
 
       $nft->setCreatedAt(new \DateTime($data["createdAt"]));
       $nft->setPrice($data["price"]);

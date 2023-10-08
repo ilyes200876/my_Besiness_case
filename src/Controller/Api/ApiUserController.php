@@ -54,9 +54,13 @@ class ApiUserController extends AbstractController
         $user->setEmail($data["email"]);
         $user->setBirthDate(new \DateTime($data["birthDate"]));
         $user->setNickname($data["nickname"]);
-        $password = $passwordHasher->hash($data["password"]);
-        $user->setPassword($password);
         
+        $passwordReceived = $data["password"];
+        $hashedPassword = $passwordHasher->hashPassword(
+            $user,
+            $passwordReceived
+        );
+        $user->setPassword($hashedPassword);
         
         $user->setAddress($address);
         $nfts = [];
