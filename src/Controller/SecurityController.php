@@ -15,6 +15,9 @@ class SecurityController extends AbstractController
         // if ($this->getUser()) {
         //     return $this->redirectToRoute('target_path');
         // }
+        // if ($this->getUser() && $this->getUser()->isIsVerified()) {
+        //     return $this->redirectToRoute('app_home');
+        // }
 
         // get the login error if there is one
         $error = $authenticationUtils->getLastAuthenticationError();
