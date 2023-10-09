@@ -93,12 +93,12 @@ class ApiNftController extends AbstractController
 
       $userRoles = $userConnecté->getRoles();
 
-      if($user == $userConnecté || in_array("ROLE_ADMIN" , $userRoles)){
+//       if($user == $userConnecté || in_array("ROLE_ADMIN" , $userRoles)){
 
-// modifie l nft 
-      }else{
-return une erreur }
-// alors l'user doit etre soit an admin soit le propriété de la nft
+// // modifie l nft 
+//       }else{
+// return une erreur }
+// // alors l'user doit etre soit an admin soit le propriété de la nft
 
 
       $nft->setCreatedAt(new \DateTime($data["createdAt"]));

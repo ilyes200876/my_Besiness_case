@@ -2,6 +2,7 @@
 
 namespace App\Controller\Api;
 
+use App\Entity\Address;
 use App\Entity\User;
 use App\Repository\AddressRepository;
 use App\Repository\NftRepository;
@@ -11,7 +12,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\PasswordHasher\PasswordHasherInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 
@@ -23,7 +24,7 @@ class ApiUserController extends AbstractController
         private EntityManagerInterface $entityManager
     ){}
 
-    #[Route('/', name: 'app_user_all', methods: ['GET'])]
+    #[Route('/', name: 'app_all_user', methods: ['GET'])]
     public function index(): Response
     {
         $users = $this->userRepository->findAll();
@@ -32,7 +33,7 @@ class ApiUserController extends AbstractController
         
     }
 
-    #[Route('/show/{id}', name: 'app_user_show', methods: ['GET'])]
+    #[Route('/show/{id}', name: 'app_show_user', methods: ['GET'])]
     public function show(int $id): Response
     {
         $user = $this->userRepository->find($id);
@@ -42,11 +43,14 @@ class ApiUserController extends AbstractController
 
     
     #[Route('/add', name: 'app_add_user', methods: ['POST'])]
-    public function add(Request $request, SerializerInterface $serializer, NftRepository $nftRepository, PasswordHasherInterface $passwordHasher, AddressRepository $addressRepository): JsonResponse {
+    public function add(Request $request, SerializerInterface $serializer, NftRepository $nftRepository, UserPasswordHasherInterface $passwordHasher, AddressRepository $addressRepository): JsonResponse {
         $data = json_decode($request->getContent(), true);
 
-        $address = $addressRepository->find($data["address"]);
+        $address = new Address();
 
+        $address->setCountry($data['country']);
+        $address->setDepartment($data['department']);
+        $address->setStreet($data['street']);
         $user = new User();
         $user->setFirstName($data["firstName"]);
         $user->setLastName($data["lastName"]);
@@ -63,11 +67,11 @@ class ApiUserController extends AbstractController
         $user->setPassword($hashedPassword);
         
         $user->setAddress($address);
-        $nfts = [];
-        for($i = 0; $i < count($data["nfts"]); $i++){
-            $nfts[] = $nftRepository->findBy(["id" => $data["nfts"][$i]]);
-            $user->addNft($nfts[$i][0]);
-        }
+        // $nfts = [];
+        // for($i = 0; $i < count($data["nfts"]); $i++){
+        //     $nfts[] = $nftRepository->findBy(["id" => $data["nfts"][$i]]);
+        //     $user->addNft($nfts[$i][0]);
+        // }
         $roles = $data["roles"];
         $user->setRoles($roles);
         
@@ -82,7 +86,7 @@ class ApiUserController extends AbstractController
     }
     
 
-    #[Route('/update/{id}', name: 'app_user_update', methods: ['UPDATE'])]
+    #[Route('/update/{id}', name: 'app_update_user', methods: ['UPDATE'])]
     public function update()
     {
         
@@ -90,7 +94,7 @@ class ApiUserController extends AbstractController
 
     }
 
-    #[Route('/delete/{id}', name: 'app_user_delete', methods: ['DELETE'])]
+    #[Route('/delete/{id}', name: 'app_delete_user', methods: ['DELETE'])]
     public function delete(User $user): JsonResponse {
         $this->entityManager->remove($user);
         $this->entityManager->flush();
