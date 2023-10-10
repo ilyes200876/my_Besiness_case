@@ -62,7 +62,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['allUsers','oneUser'])]
     private Collection $nfts;
 
-    #[ORM\ManyToOne(inversedBy: 'users')]
+    #[ORM\ManyToOne(inversedBy: 'users', cascade: ['persist', 'remove'])]
     private ?Address $address = null;
 
     public function __construct()

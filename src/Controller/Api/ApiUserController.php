@@ -51,6 +51,7 @@ class ApiUserController extends AbstractController
         $address->setCountry($data['country']);
         $address->setDepartment($data['department']);
         $address->setStreet($data['street']);
+        $address->setZipCode($data['zipCode']);
         $user = new User();
         $user->setFirstName($data["firstName"]);
         $user->setLastName($data["lastName"]);
@@ -67,11 +68,6 @@ class ApiUserController extends AbstractController
         $user->setPassword($hashedPassword);
         
         $user->setAddress($address);
-        // $nfts = [];
-        // for($i = 0; $i < count($data["nfts"]); $i++){
-        //     $nfts[] = $nftRepository->findBy(["id" => $data["nfts"][$i]]);
-        //     $user->addNft($nfts[$i][0]);
-        // }
         $roles = $data["roles"];
         $user->setRoles($roles);
         
