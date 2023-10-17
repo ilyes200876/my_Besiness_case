@@ -82,7 +82,7 @@ class ApiUserController extends AbstractController
     }
     
 
-    #[Route('/update/{id}', name: 'app_update_user', methods: ['UPDATE'])]
+    #[Route('/update/{id}', name: 'app_update_user', methods: ['PUT'])]
     public function update()
     {
         

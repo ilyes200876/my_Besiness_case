@@ -16,6 +16,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\SerializerInterface;
 
@@ -27,7 +28,7 @@ class ApiNftController extends AbstractController
         private EntityManagerInterface $entityManager
     ){}
 
-    #[Route('/', name: 'app_nft_all', methods: ['GET'])]
+    #[Route('/', name: 'app_all_nft', methods: ['GET'])]
     public function index(): Response
     {
       
@@ -79,45 +80,36 @@ class ApiNftController extends AbstractController
     
 
     // #[Security("is_granted('ROLE_USER' and user === nft.getUser())")]
-    #[Route('/update/{id}', name: 'app_nft_update', methods: ['PUT'])]
-    public function update(int $id, Request $request,NftRepository $nftRepository, UserRepository $userRepository, SubCategoryRepository $subCategoryRepository)
+    #[Route('/update/{id}', name: 'app_update_nft', methods: ['PUT'])]
+    public function update(int $id, Request $request,NftRepository $nftRepository, UserRepository $userRepository, SubCategoryRepository $subCategoryRepository, TokenInterface $token)
     {
       $data = json_decode($request->getContent(), true);
-      $nft = $nftRepository->find($data["nft_id"]);
-      $user = $nftRepository->getUser();
-      $userConnecté = $userRepository->find($data["user_id"]);
+      $price = $data["price"];
 
-//       $nft = $nftRepository->find($data["nft_id"]);
-// $user = $nftRepository->getUser();
-      $userConnecté = $userRepository->find($data["user_id"]);
+      $nft = $nftRepository->find($id);
+      // $user = $nftRepository->getUser();
+      $userConnected = $token->getUser();
+      
+      // $userConnecté = $userRepository->find($data["user_id"]);
 
-      $userRoles = $userConnecté->getRoles();
+      $nftOwner = $nft->getUser(); 
+      $userRoles = $userConnected->getRoles();
 
-//       if($user == $userConnecté || in_array("ROLE_ADMIN" , $userRoles)){
-
-// // modifie l nft 
-//       }else{
-// return une erreur }
-// // alors l'user doit etre soit an admin soit le propriété de la nft
-
-
-      $nft->setCreatedAt(new \DateTime($data["createdAt"]));
-      $nft->setPrice($data["price"]);
+      $nft->setPrice($price);
       $nft->setDescription($data["description"]);
-      $nft->setFormat($data["format"]);
-      $nft->setSrc($data["src"]);
       $nft->setTitle($data["title"]);
-      $nft->setWeight($data["weight"]);
-      $nft->setUser($user);
+      $nft->setUser($userConnected);
       for($i = 0 ; $i<count($data["subCategories"]); $i++){
         $subCategories[] = $subCategoryRepository->findBy(["id" => $data["subCategories"][$i]]);
         $nft->addSubCategory($subCategories[$i][0]);
       }
 
       try{
-        $this->entityManager->persist($nft);
-        $this->entityManager->flush();
-      return $this->json("Nft Added with Success", 201);
+        if($nftOwner == $userConnected || in_array("ROLE_ADMIN" , $userRoles)){
+          $this->entityManager->persist($nft);
+          $this->entityManager->flush();
+          return $this->json("Nft updated with Success", 201);
+        }
       }
       catch(\Exception $e){
         return $this->json($e, 400);
@@ -126,10 +118,16 @@ class ApiNftController extends AbstractController
     }
 
     // #[Security("is_granted('ROLE_USER' and user === nft.getUser()")]
-    #[Route('/delete/{id}', name: 'app_nft_delete', methods: ['DELETE'])]
-    public function delete(Nft $nft): JsonResponse {
-        $this->entityManager->remove($nft);
+    #[Route('/delete/{id}', name: 'app_delete_nft', methods: ['DELETE'])]
+    public function delete(int $id , NftRepository $nftRepository): JsonResponse {
+
+      $nft = $nftRepository->find($id);
+      if($nft){
+                $this->entityManager->remove($nft);
         $this->entityManager->flush();
-        return $this->json("nft deleated", 204);
+        return $this->json("nft deleated", 200);
+      }
+      return $this->json("nft not found" , 400);
+
     }
   }

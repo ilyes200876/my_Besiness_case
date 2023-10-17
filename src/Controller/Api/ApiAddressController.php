@@ -20,7 +20,7 @@ class ApiAddressController extends AbstractController
         private EntityManagerInterface $entityManager
     ){}
 
-    #[Route('/', name: 'app_adsress_all', methods: ['GET'])]
+    #[Route('/', name: 'app_all_adsress', methods: ['GET'])]
     public function index(): Response
     {
         
@@ -30,7 +30,7 @@ class ApiAddressController extends AbstractController
         
     }
 
-    #[Route('/show/{id}', name: 'app_address_show', methods: ['GET'])]
+    #[Route('/show/{id}', name: 'app_show_address', methods: ['GET'])]
     public function show(int $id): Response
     {
         $address = $this->addressRepository->find($id);
@@ -38,7 +38,7 @@ class ApiAddressController extends AbstractController
         return $this->json($address, 200, [], ['groups' => 'oneAddress']);
     }
     
-    #[Route('/add', name: 'app_address_add', methods: ['POST'])]
+    #[Route('/add', name: 'app_add_address', methods: ['POST'])]
     public function add(Request $request, UserRepository $userRepository)
     {
         $data = json_decode($request->getContent(), true);
@@ -68,17 +68,32 @@ class ApiAddressController extends AbstractController
     }
     
 
-    #[Route('/update/{id}', name: 'app_address_update', methods: ['EDIT'])]
-    public function update()
+    #[Route('/update/{id}', name: 'app_update_address', methods: ['PUT'])]
+    public function update(Request $request, int $id, AddressRepository $addressRepository)
     {
+        $data= json_decode($request->getContent(), true);
+        $address = $addressRepository->find($id);
+
+        $address->setCountry($data['country']);
+        $address->setDepartment($data['department']);
+        $address->setStreet($data['street']);
+        $address->setZipCode($data['zipCode']);
+
+        try{
+            $this->entityManager->persist($address);
+            $this->entityManager->flush();
+            return $this->json("Address updated with Success", 201);
+        }catch(\Exception $e){
+            return $this->json($e, 400);
+        }
 
     }
 
-    #[Route('/delete/{id}', name: 'app_address_delete', methods: ['DELETE'])]
-    public function delete(Address $address): JsonResponse {
-        $this->entityManager->remove($address);
-        $this->entityManager->flush();
-        return $this->json("address deleated", 204);
-    }
+    // #[Route('/delete/{id}', name: 'app_delete_address', methods: ['DELETE'])]
+    // public function delete(Address $address): JsonResponse {
+    //     $this->entityManager->remove($address);
+    //     $this->entityManager->flush();
+    //     return $this->json("address deleated", 204);
+    // }
 
 }

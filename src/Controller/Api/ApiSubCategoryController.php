@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/api/subCategory')]
 class ApiSubCategoryController extends AbstractController
@@ -21,7 +22,7 @@ class ApiSubCategoryController extends AbstractController
         private EntityManagerInterface $entityManager
     ){}
 
-    #[Route('/', name: 'app_subCategogy_all', methods: ['GET'])]
+    #[Route('/', name: 'app_all_subCategogy', methods: ['GET'])]
     public function index(): Response
     {
         $subCategories = $this->subCategoryRepository->findAll();
@@ -31,15 +32,15 @@ class ApiSubCategoryController extends AbstractController
         
     }
 
-    #[Route('/show/{id}', name: 'app_subCategogy_show', methods: ['GET'])]
+    #[Route('/show/{id}', name: 'app_show_subCategogy', methods: ['GET'])]
     public function show(int $id): Response
     {
         $subCategory = $this->subCategoryRepository->find($id);
 
         return $this->json($subCategory, 200, [], ['groups' => 'oneSubCategory']);
     }
-    
-    #[Route('/add', name: 'app_subCategory_add', methods: ['POST'])]
+    #[IsGranted("ROLE_ADMIN")]
+    #[Route('/add', name: 'app_add_subCategory', methods: ['POST'])]
     public function add(Request $request, CategoryRepository $categoryRepository)
     {
         $data = json_decode($request->getContent(), true);
@@ -65,14 +66,28 @@ class ApiSubCategoryController extends AbstractController
 
     }
     
-
-    #[Route('/update/{id}', name: 'app_subCategory_update', methods: ['EDIT'])]
-    public function update()
+    #[IsGranted("ROLE_ADMIN")]
+    #[Route('/update/{id}', name: 'app_update_subCategory', methods: ['PUT'])]
+    public function update(Request $request, SubCategoryRepository $subCategoryRepository, int $id)
     {
+
+        $data = json_decode($request->getContent(), true);
+        $subCategory = $subCategoryRepository->find($id);
+
+        $subCategory->setSubCategoryName($data["subCategoryName"]);
+        
+        try{
+            $this->entityManager->persist($subCategory);
+            $this->entityManager->flush();
+            return $this->json("subCategory updated with success", 201);
+        }catch(\Exception $e){
+            return $this->json($e, 400);
+        }
 
     }
 
-    #[Route('/delete/{id}', name: 'app_subCategory_delete', methods: ['DELETE'])]
+    // #[IsGranted("ROLE_ADMIN")]
+    #[Route('/delete/{id}', name: 'app_delete_subCategory', methods: ['DELETE'])]
     public function delete(SubCategory $subCategory): JsonResponse {
         $this->entityManager->remove($subCategory);
         $this->entityManager->flush();

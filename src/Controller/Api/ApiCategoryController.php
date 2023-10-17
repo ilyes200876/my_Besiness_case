@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/api/category')]
 class ApiCategoryController extends AbstractController
@@ -20,7 +21,7 @@ class ApiCategoryController extends AbstractController
         private EntityManagerInterface $entityManager
     ){}
 
-    #[Route('/', name: 'app_categogy_all')]
+    #[Route('/', name: 'app_all_categogy', methods: ['GET'])]
     public function index(): Response
     {
         
@@ -30,15 +31,15 @@ class ApiCategoryController extends AbstractController
         
     }
 
-    #[Route('/show/{id}', name: 'app_categogy_show')]
+    #[Route('/show/{id}', name: 'app_show_categogy', methods: ['GET'])]
     public function show(int $id): Response
     {
         $category = $this->categoryRepository->find($id);
 
         return $this->json($category, 200, [], ['groups' => 'oneCategory']);
     }
-    
-    #[Route('/add', name: 'app_category_add', methods: ['POST'])]
+    #[IsGranted("ROLE_ADMIN")]
+    #[Route('/add', name: 'app_add_category', methods: ['POST'])]
     public function add(Request $request)
     {
 
@@ -58,14 +59,27 @@ class ApiCategoryController extends AbstractController
         
     }
     
-
-    #[Route('/update/{id}', name: 'app_category_update')]
-    public function update()
+    #[IsGranted("ROLE_ADMIN")]
+    #[Route('/update/{id}', name: 'app_update_category', methods: ['put'])]
+    public function update(Request $request, CategoryRepository $categoryRepository, int $id)
     {
+        $data= json_decode($request->getContent(), true);
+        $category = $categoryRepository->find($id);
+
+        $category->setCategoryName($data["categoryName"]);
+
+        try{
+            $this->entityManager->persist($category);
+            $this->entityManager->flush();
+            return $this->json("Category updated with success", 201);
+        }catch(\Exception $e){
+            return $this->json($e, 400);
+        }
 
     }
 
-    #[Route('/delete/{id}', name: 'app_category_delete')]
+    // #[IsGranted("ROLE_ADMIN")]
+    #[Route('/delete/{id}', name: 'app_delete_category', methods: ['delete'])]
     public function delete(Category $category): JsonResponse {
         $this->entityManager->remove($category);
         $this->entityManager->flush();
