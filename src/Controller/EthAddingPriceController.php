@@ -13,10 +13,12 @@ class EthAddingPriceController extends AbstractController{
   #[Route("eth-add-price")]
 public function getPrice(HttpClientInterface $httpClient , EntityManagerInterface $entityManager){
 
-           $response = $httpClient->request("GET" , "https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=EUR");
-           $currentPrice = $response->getContent();
-           $currentPrice = json_decode($currentPrice , true);
-           $currentPriceEuro = $currentPrice["EUR"];
+          //  $response = $httpClient->request("GET" , "https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=EUR");
+          //  $currentPrice = $response->getContent();
+          //  $currentPrice = json_decode($currentPrice , true);
+          //  $currentPriceEuro = $currentPrice["EUR"];
+
+          $currentPriceEuro = rand(100000 , 130000)/100;
 
            $date = new \DateTime("now" , new \DateTimeZone("Europe/Paris"));
 
