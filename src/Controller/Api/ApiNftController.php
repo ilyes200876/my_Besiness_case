@@ -87,10 +87,7 @@ class ApiNftController extends AbstractController
       $price = $data["price"];
 
       $nft = $nftRepository->find($id);
-      // $user = $nftRepository->getUser();
       $userConnected = $token->getUser();
-      
-      // $userConnecté = $userRepository->find($data["user_id"]);
 
       $nftOwner = $nft->getUser(); 
       $userRoles = $userConnected->getRoles();
@@ -104,30 +101,46 @@ class ApiNftController extends AbstractController
         $nft->addSubCategory($subCategories[$i][0]);
       }
 
-      try{
-        if($nftOwner == $userConnected || in_array("ROLE_ADMIN" , $userRoles)){
+      if(!$nft){
+        return $this->json("Nft not found", 400);
+      }
+
+      if($nftOwner == $userConnected || in_array("ROLE_ADMIN" , $userRoles)){
+        try{
           $this->entityManager->persist($nft);
           $this->entityManager->flush();
           return $this->json("Nft updated with Success", 201);
         }
-      }
-      catch(\Exception $e){
-        return $this->json($e, 400);
+        catch(\Exception $e){
+          return $this->json($e, 400);
+        }
+      }else{
+        return $this->json("Unauthorized", 401);
       }
 
     }
 
     // #[Security("is_granted('ROLE_USER' and user === nft.getUser()")]
     #[Route('/delete/{id}', name: 'app_delete_nft', methods: ['DELETE'])]
-    public function delete(int $id , NftRepository $nftRepository): JsonResponse {
+    public function delete(int $id , NftRepository $nftRepository, TokenInterface $token): JsonResponse {
 
       $nft = $nftRepository->find($id);
-      if($nft){
-                $this->entityManager->remove($nft);
-        $this->entityManager->flush();
-        return $this->json("nft deleated", 200);
+      $userConnected = $token->getUser();
+      $nftOwner = $nft->getUser(); 
+      $userRoles = $userConnected->getRoles();
+      if(!$nft){
+        return $this->json("Nft not found", 400);
       }
-      return $this->json("nft not found" , 400);
+      if($nftOwner == $userConnected || in_array("ROLE_ADMIN" , $userRoles)){
+        try{
+          $this->entityManager->remove($nft);
+          $this->entityManager->flush();
+          return $this->json("nft deleated", 200);
+        }catch(\Exception $e){
+          return $this->json($e, 400);
+        }
+      }
+      return $this->json("Unauthorized" , 401);
 
     }
   }

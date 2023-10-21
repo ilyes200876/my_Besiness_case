@@ -76,22 +76,31 @@ class ApiSubCategoryController extends AbstractController
 
         $subCategory->setSubCategoryName($data["subCategoryName"]);
         
-        try{
-            $this->entityManager->persist($subCategory);
-            $this->entityManager->flush();
-            return $this->json("subCategory updated with success", 201);
-        }catch(\Exception $e){
-            return $this->json($e, 400);
+        if($subCategory){
+            try{
+                $this->entityManager->persist($subCategory);
+                $this->entityManager->flush();
+                return $this->json("subCategory updated with success", 201);
+            }catch(\Exception $e){
+                return $this->json($e, 400);
+            }
+        }else{
+            return $this->json("Subcategory not found", 401);
         }
 
     }
 
-    // #[IsGranted("ROLE_ADMIN")]
+    #[IsGranted("ROLE_ADMIN")]
     #[Route('/delete/{id}', name: 'app_delete_subCategory', methods: ['DELETE'])]
-    public function delete(SubCategory $subCategory): JsonResponse {
-        $this->entityManager->remove($subCategory);
-        $this->entityManager->flush();
-        return $this->json("subCategory deleated", 204);
+    public function delete(int$id, SubCategoryRepository $subCategoryRepository): JsonResponse {
+        $subCategory = $subCategoryRepository->find($id);
+        if ($subCategory){
+            $this->entityManager->remove($subCategory);
+            $this->entityManager->flush();
+            return $this->json("SubCategory deleated", 204);
+        }else{
+            return $this->json("SubCategory  not found", 400);
+        }
     }
 
 }

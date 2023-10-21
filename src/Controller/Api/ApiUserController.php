@@ -14,7 +14,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/api/user')]
 class ApiUserController extends AbstractController
@@ -41,7 +43,7 @@ class ApiUserController extends AbstractController
         return $this->json($user, 200, [], ['groups' => 'oneUser']);
     }
 
-    
+    #[IsGranted("ROLE_ADMIN")]
     #[Route('/add', name: 'app_add_user', methods: ['POST'])]
     public function add(Request $request, SerializerInterface $serializer, NftRepository $nftRepository, UserPasswordHasherInterface $passwordHasher, AddressRepository $addressRepository): JsonResponse {
         $data = json_decode($request->getContent(), true);
@@ -83,18 +85,55 @@ class ApiUserController extends AbstractController
     
 
     #[Route('/update/{id}', name: 'app_update_user', methods: ['PUT'])]
-    public function update()
+    public function update(int $id,Request $request, UserRepository $userRepository, TokenInterface $token )
     {
+        $data = json_decode($request->getContent(), true);
+
+        $user = $userRepository->find($id);
+        $userConnected = $token->getUser(); 
+
+
+        $user->setFirstName($data["firstName"]);
+        $user->setLastName($data["lastName"]);
+        $user->setGender($data["gender"]);
+        $user->setBirthDate(new \DateTime($data["birthDate"]));
+        $user->setNickname($data["nickname"]);
         
+        $roles = $data["roles"];
+        $user->setRoles($roles);
+
+        if (!$user){
+            return $this->json("User not found");
+        }
+        if ($user === $userConnected){
+            try{
+                
+                $this->entityManager->persist($user);
+                $this->entityManager->flush();
+                return $this->json("User updated with success", 201);
+            
+            }
+            catch(\Exception $e){
+                return $this->json($e, 400);
+            }
+        }else{
+            return $this->json("Unauthorized", 401);
+        }
 
 
     }
 
+    #[IsGranted("ROLE_ADMIN")]
     #[Route('/delete/{id}', name: 'app_delete_user', methods: ['DELETE'])]
-    public function delete(User $user): JsonResponse {
-        $this->entityManager->remove($user);
-        $this->entityManager->flush();
-        return $this->json("User deleated", 204);
+    public function delete(int $id, UserRepository $userRepository): JsonResponse {
+        $user = $userRepository->find($id);
+        if ($user){
+            $this->entityManager->remove($user);
+            $this->entityManager->flush();
+            return $this->json("User deleated", 204);
+        }else{
+            return $this->json("User not found", 400);
+        }
     }
 
 }

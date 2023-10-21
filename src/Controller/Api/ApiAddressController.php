@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 
 #[Route('/api/address')]
 class ApiAddressController extends AbstractController
@@ -69,22 +70,36 @@ class ApiAddressController extends AbstractController
     
 
     #[Route('/update/{id}', name: 'app_update_address', methods: ['PUT'])]
-    public function update(Request $request, int $id, AddressRepository $addressRepository)
+    public function update(Request $request, int $id, AddressRepository $addressRepository, TokenInterface $token)
     {
         $data= json_decode($request->getContent(), true);
         $address = $addressRepository->find($id);
+
+        $userConnected = $token->getUser();
+
+        $addressOwner = [];
+        $addressOwner = $address->getUsers();
+        // dd($addressOwner);
 
         $address->setCountry($data['country']);
         $address->setDepartment($data['department']);
         $address->setStreet($data['street']);
         $address->setZipCode($data['zipCode']);
+        
+        if(!$address){
+            return $this->json("Address not found",400);
+        }
 
-        try{
-            $this->entityManager->persist($address);
-            $this->entityManager->flush();
-            return $this->json("Address updated with Success", 201);
-        }catch(\Exception $e){
-            return $this->json($e, 400);
+        if (in_array($userConnected, $addressOwner )) {
+            try {
+                $this->entityManager->persist($address);
+                $this->entityManager->flush();
+                return $this->json("Address updated with Success", 200);
+            } catch (\Exception $e) {
+                return $this->json($e->getMessage(), 400);
+            }
+        }else{
+            return $this->json("Unauthorized", 401);
         }
 
     }

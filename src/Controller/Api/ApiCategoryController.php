@@ -68,22 +68,30 @@ class ApiCategoryController extends AbstractController
 
         $category->setCategoryName($data["categoryName"]);
 
-        try{
-            $this->entityManager->persist($category);
-            $this->entityManager->flush();
-            return $this->json("Category updated with success", 201);
-        }catch(\Exception $e){
-            return $this->json($e, 400);
+        if ($category){
+            try{
+                $this->entityManager->persist($category);
+                $this->entityManager->flush();
+                return $this->json("Category updated with success", 201);
+            }catch(\Exception $e){
+                return $this->json($e, 400);
+            }
+        }else{
+            return $this->json("Category not found", 400);
         }
 
     }
 
-    // #[IsGranted("ROLE_ADMIN")]
+    #[IsGranted("ROLE_ADMIN")]
     #[Route('/delete/{id}', name: 'app_delete_category', methods: ['delete'])]
-    public function delete(Category $category): JsonResponse {
-        $this->entityManager->remove($category);
-        $this->entityManager->flush();
-        return $this->json("category deleated", 204);
+    public function delete(int $id, CategoryRepository $categoryRepository): JsonResponse {
+        $category = $categoryRepository->find($id);
+        if($category){
+            $this->entityManager->remove($category);
+            $this->entityManager->flush();
+            return $this->json("Category deleated", 200);
+        }
+        return $this->json("Category not found" , 400);
     }
 
 }
