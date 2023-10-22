@@ -78,7 +78,7 @@ class ApiAddressController extends AbstractController
         $userConnected = $token->getUser();
 
         $addressOwner = [];
-        $addressOwner = $address->getUsers();
+        $addressOwner = $address->getUsers()->toArray();
         // dd($addressOwner);
 
         $address->setCountry($data['country']);

@@ -120,7 +120,6 @@ class ApiNftController extends AbstractController
 
     }
 
-    // #[Security("is_granted('ROLE_USER' and user === nft.getUser()")]
     #[Route('/delete/{id}', name: 'app_delete_nft', methods: ['DELETE'])]
     public function delete(int $id , NftRepository $nftRepository, TokenInterface $token): JsonResponse {
 
