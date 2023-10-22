@@ -29,10 +29,38 @@ class ApiNftController extends AbstractController
     ){}
 
     #[Route('/', name: 'app_all_nft', methods: ['GET'])]
-    public function index(): Response
+    public function index(Request $request): Response
     {
-      
-      $nfts = $this->nftRepository->findAll();
+      $subCategoryName = $request->query->get("sn");
+      $nftTitle = $request->query->get("t");
+      $qb = $this->nftRepository->findQbAll();
+      if ($subCategoryName === "all" || $subCategoryName === ""){
+        if($nftTitle === ""){
+          $qb->orderBy("nft.createdAt", "desc");
+        }else{
+          $qb->andWhere("nft.title LIKE :nftTitle")  
+            ->setParameter("nftTitle", "%" . $nftTitle . "%")
+            ->orderBy("nft.createdAt", "desc");
+        }
+        
+        // dd($qb);
+        
+        // dd($nfts);
+      }else{
+        $qb->join("nft.subCategories", "s")
+        ->andWhere("s.subCategoryName = :scName")
+        ->setParameter("scName", $subCategoryName)
+        ->orderBy("nft.createdAt", "desc");
+        if ($nftTitle !== ""){
+          $qb->andWhere("nft.title LIKE :nftTitle")  
+          ->setParameter("nftTitle", "%" . $nftTitle . "%");
+        }
+        
+      }
+
+        
+      $nfts = $qb->getQuery()
+          ->getResult();
       return $this->json($nfts, 200, [], ['groups' => 'allNfts']);
         
     }

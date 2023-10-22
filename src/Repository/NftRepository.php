@@ -22,12 +22,13 @@ class NftRepository extends ServiceEntityRepository
         parent::__construct($registry, Nft::class);
     }
 
-    public function FindAllBySubgategoryName(): QueryBuilder{
-        return $this->createQueryBuilder("s");
-    }
+    // public function FindAllBySubgategoryName(): QueryBuilder{
+    //     return $this->createQueryBuilder("sn");
+    // }
 
-    public function FindAllByTitle(): QueryBuilder{
-        return $this->createQueryBuilder("t");
+    public function findQbAll(): QueryBuilder
+    {
+        return $this->createQueryBuilder("nft");
     }
 
 //    /**
