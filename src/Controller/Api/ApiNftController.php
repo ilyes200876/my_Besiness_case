@@ -34,7 +34,7 @@ class ApiNftController extends AbstractController
       $subCategoryName = $request->query->get("sn");
       $nftTitle = $request->query->get("t");
       $qb = $this->nftRepository->findQbAll();
-      if ($subCategoryName === "all" || $subCategoryName === ""){
+      if ($subCategoryName === "all" || !$subCategoryName){
         if($nftTitle === ""){
           $qb->orderBy("nft.createdAt", "desc");
         }else{
@@ -74,7 +74,8 @@ class ApiNftController extends AbstractController
 
     #[IsGranted("Role_User")]
     #[Route('/add', name: 'app_add_nft', methods: ['POST'])]
-    public function add(Request $request, SerializerInterface $serializer , UserRepository $userRepository,SubCategoryRepository $subCategoryRepository): JsonResponse 
+    public function add(Request $request, SerializerInterface $serializer , 
+    UserRepository $userRepository,SubCategoryRepository $subCategoryRepository): JsonResponse 
     {
       $data = json_decode($request->getContent(), true);
 
@@ -107,9 +108,10 @@ class ApiNftController extends AbstractController
     }
     
 
-    // #[Security("is_granted('ROLE_USER' and user === nft.getUser())")]
+  
     #[Route('/update/{id}', name: 'app_update_nft', methods: ['PUT'])]
-    public function update(int $id, Request $request,NftRepository $nftRepository, UserRepository $userRepository, SubCategoryRepository $subCategoryRepository, TokenInterface $token)
+    public function update(int $id, Request $request,NftRepository $nftRepository, 
+    UserRepository $userRepository, SubCategoryRepository $subCategoryRepository, TokenInterface $token)
     {
       $data = json_decode($request->getContent(), true);
       $price = $data["price"];
