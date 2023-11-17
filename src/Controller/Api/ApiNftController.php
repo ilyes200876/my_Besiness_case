@@ -43,9 +43,6 @@ class ApiNftController extends AbstractController
             ->orderBy("nft.createdAt", "desc");
         }
         
-        // dd($qb);
-        
-        // dd($nfts);
       }else{
         $qb->join("nft.subCategories", "s")
         ->andWhere("s.subCategoryName = :scName")

@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Eth;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -20,6 +21,13 @@ class EthRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Eth::class);
     }
+
+
+    public function findQbAll(): QueryBuilder
+    {
+        return $this->createQueryBuilder("eth");
+    }
+
 
 //    /**
 //     * @return Eth[] Returns an array of Eth objects
