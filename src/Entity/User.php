@@ -25,7 +25,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $email = null;
 
     #[ORM\Column]
-    #[Groups(['allUsers','oneUser'])]
+    #[Groups(['user'])]
     private array $roles = [];
 
     /**
@@ -35,35 +35,39 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $password = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['allUsers','oneUser'])]
+    #[Groups(['user'])]
     private ?string $gender = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['allUsers','oneUser', 'oneAddress', 'allAddress'])]
+    #[Groups(['user', 'address'])]
     private ?string $firstName = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['allUsers','oneUser', 'oneAddress', 'allAddress'])]
+    #[Groups(['user', 'address'])]
     private ?string $lastName = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['allUsers','oneUser', 'allNfts', 'oneNft'])]
+    #[Groups(['user', 'allNfts', 'oneNft'])]
     private ?string $nickname = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
-    #[Groups(['allUsers','oneUser'])]
+    #[Groups(['user'])]
     private ?\DateTimeInterface $birthDate = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups(['allUsers','oneUser'])]
+    #[Groups(['user'])]
     private ?bool $isOwner = null;
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Nft::class)]
-    #[Groups(['allUsers','oneUser'])]
+    #[Groups(['user'])]
     private Collection $nfts;
 
     #[ORM\ManyToOne(inversedBy: 'users', cascade: ['persist', 'remove'])]
+    #[Groups(['user'])]
     private ?Address $address = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $profilePic = null;
 
     public function __construct()
     {
@@ -257,6 +261,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function __toString(): string
     {
         return $this->nickname;
+    }
+
+    public function getProfilePic(): ?string
+    {
+        return $this->profilePic;
+    }
+
+    public function setProfilePic(?string $profilePic): static
+    {
+        $this->profilePic = $profilePic;
+
+        return $this;
     }
 
 }

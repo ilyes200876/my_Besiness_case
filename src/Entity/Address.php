@@ -14,27 +14,27 @@ class Address
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['allAddress','oneAddress'])]
+    #[Groups(['address','user'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['allAddress','oneAddress'])]
+    #[Groups(['address','user'])]
     private ?string $street = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['allAddress','oneAddress'])]
+    #[Groups(['address','user'])]
     private ?string $department = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['allAddress','oneAddress'])]
+    #[Groups(['address','user'])]
     private ?string $zipCode = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['allAddress','oneAddress'])]
+    #[Groups(['address','user'])]
     private ?string $country = null;
 
     #[ORM\OneToMany(mappedBy: 'address', targetEntity: User::class)]
-    #[Groups(['allAddress','oneAddress'])]
+    #[Groups(['address'])]
     private Collection $users;
 
     public function __construct()

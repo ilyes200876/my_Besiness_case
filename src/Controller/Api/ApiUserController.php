@@ -31,7 +31,7 @@ class ApiUserController extends AbstractController
     {
         $users = $this->userRepository->findAll();
 
-        return $this->json($users, 200, [], ['groups' => 'allUsers']);
+        return $this->json($users, 200, [], ['groups' => 'user']);
         
     }
 
@@ -40,38 +40,66 @@ class ApiUserController extends AbstractController
     {
         $user = $this->userRepository->find($id);
 
-        return $this->json($user, 200, [], ['groups' => 'oneUser']);
+        return $this->json($user, 200, [], ['groups' => 'user']);
     }
 
-    #[IsGranted("ROLE_ADMIN")]
+    // #[IsGranted("ROLE_ADMIN")]
     #[Route('/add', name: 'app_add_user', methods: ['POST'])]
     public function add(Request $request, SerializerInterface $serializer, NftRepository $nftRepository, UserPasswordHasherInterface $passwordHasher, AddressRepository $addressRepository): JsonResponse {
         $data = json_decode($request->getContent(), true);
 
         $address = new Address();
 
-        $address->setCountry($data['country']);
-        $address->setDepartment($data['department']);
-        $address->setStreet($data['street']);
-        $address->setZipCode($data['zipCode']);
+        if (isset($data['country'])) {
+            $address->setCountry($data['country']);
+        }
+        if (isset($data['department'])) {
+            $address->setDepartment($data['department']);
+        }
+        if (isset($data['street'])) {
+            $address->setStreet($data['street']);
+        }
+        if (isset($data['zipCode'])) {
+            $address->setZipCode($data['zipCode']);
+        }
         $user = new User();
-        $user->setFirstName($data["firstName"]);
-        $user->setLastName($data["lastName"]);
-        $user->setGender($data["gender"]);
-        $user->setEmail($data["email"]);
-        $user->setBirthDate(new \DateTime($data["birthDate"]));
-        $user->setNickname($data["nickname"]);
-        
-        $passwordReceived = $data["password"];
-        $hashedPassword = $passwordHasher->hashPassword(
-            $user,
-            $passwordReceived
-        );
-        $user->setPassword($hashedPassword);
+        if(isset($data['firstName'])) {
+            $user->setFirstName($data["firstName"]);
+        }
+        if(isset($data["lastName"])) {
+            $user->setLastName($data["lastName"]);
+        }
+        if(isset($data["gender"])){
+            $user->setGender($data["gender"]);
+        }
+        if(isset($data["email"])){
+            $user->setEmail($data["email"]);
+        }
+        if(isset($dat['birthDate'])){
+            $user->setBirthDate(new \DateTime($data["birthDate"]));
+        }
+        if(isset($data['nickname'])){
+            $user->setNickname($data["nickname"]);
+        }
+
+        if(isset($data["password"])){
+            $passwordReceived = $data["password"];
+            $hashedPassword = $passwordHasher->hashPassword(
+                $user,
+                $passwordReceived
+            );
+            $user->setPassword($hashedPassword);
+        }
+        if(isset($data["profilePic"])){
+            $user->setProfilePic($data["profilePic "]);
+        }
         
         $user->setAddress($address);
-        $roles = $data["roles"];
-        $user->setRoles($roles);
+
+        if(isset($data['roles'])){
+            $roles = $data["roles"];
+            $user->setRoles($roles);
+        }
         
         try{
             $this->entityManager->persist($user);
@@ -98,6 +126,7 @@ class ApiUserController extends AbstractController
         $user->setGender($data["gender"]);
         $user->setBirthDate(new \DateTime($data["birthDate"]));
         $user->setNickname($data["nickname"]);
+        $user->setProfilePic($data["profilePic"]);
         
         $roles = $data["roles"];
         $user->setRoles($roles);

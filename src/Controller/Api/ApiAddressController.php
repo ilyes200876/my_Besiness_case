@@ -27,7 +27,7 @@ class ApiAddressController extends AbstractController
         
         $address = $this->addressRepository->findAll();
 
-        return $this->json($address, 200, [], ['groups' => 'allAddress']);
+        return $this->json($address, 200, [], ['groups' => 'address']);
         
     }
 
@@ -36,7 +36,7 @@ class ApiAddressController extends AbstractController
     {
         $address = $this->addressRepository->find($id);
 
-        return $this->json($address, 200, [], ['groups' => 'oneAddress']);
+        return $this->json($address, 200, [], ['groups' => 'address']);
     }
     
     #[Route('/add', name: 'app_add_address', methods: ['POST'])]
