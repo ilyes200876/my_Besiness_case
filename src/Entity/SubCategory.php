@@ -14,19 +14,19 @@ class SubCategory
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['allNfts, oneNft', 'allCategories', 'oneCategory','allSubCategories', 'oneSubCategory'])]
+    #[Groups(['nft', 'category','subCategory'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['allNfts', 'oneNft', 'allCategories', 'oneCategory', 'allSubCategories', 'oneSubCategory'])]
+    #[Groups(['nft', 'category', 'subCategory'])]
     private ?string $subCategoryName = null;
 
     #[ORM\ManyToMany(targetEntity: Nft::class, mappedBy: 'subCategories')]
-    #[Groups(['allSubCategories', 'oneSubCategory'])]
+    #[Groups(['subCategory'])]
     private Collection $nfts;
     
     #[ORM\ManyToOne(inversedBy: 'subCategories')]
-    #[Groups(['allSubCategories', 'oneSubCategory'])]
+    #[Groups(['subCategory'])]
     private ?Category $category = null;
 
     public function __construct()

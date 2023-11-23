@@ -58,7 +58,7 @@ class ApiNftController extends AbstractController
         
       $nfts = $qb->getQuery()
           ->getResult();
-      return $this->json($nfts, 200, [], ['groups' => 'allNfts']);
+      return $this->json($nfts, 200, [], ['groups' => 'nft']);
         
     }
 
@@ -66,7 +66,7 @@ class ApiNftController extends AbstractController
     public function show(int $id): Response
     {
       $nft = $this->nftRepository->find($id);
-      return $this->json($nft, 200, [], ['groups' => 'oneNft']);
+      return $this->json($nft, 200, [], ['groups' => 'nft']);
     }
 
     #[IsGranted("Role_User")]

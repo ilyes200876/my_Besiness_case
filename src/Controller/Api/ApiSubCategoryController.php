@@ -27,7 +27,7 @@ class ApiSubCategoryController extends AbstractController
     {
         $subCategories = $this->subCategoryRepository->findAll();
 
-        return $this->json($subCategories, 200, [], ['groups' => 'allSubCategories']);
+        return $this->json($subCategories, 200, [], ['groups' => 'subCategory']);
         
         
     }
@@ -37,7 +37,7 @@ class ApiSubCategoryController extends AbstractController
     {
         $subCategory = $this->subCategoryRepository->find($id);
 
-        return $this->json($subCategory, 200, [], ['groups' => 'oneSubCategory']);
+        return $this->json($subCategory, 200, [], ['groups' => 'subCategory']);
     }
     #[IsGranted("ROLE_ADMIN")]
     #[Route('/add', name: 'app_add_subCategory', methods: ['POST'])]

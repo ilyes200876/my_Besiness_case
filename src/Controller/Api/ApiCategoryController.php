@@ -27,7 +27,7 @@ class ApiCategoryController extends AbstractController
         
         $categories = $this->categoryRepository->findAll();
 
-        return $this->json($categories, 200, [], ['groups' => 'allCategories']);
+        return $this->json($categories, 200, [], ['groups' => 'category']);
         
     }
 
@@ -36,7 +36,7 @@ class ApiCategoryController extends AbstractController
     {
         $category = $this->categoryRepository->find($id);
 
-        return $this->json($category, 200, [], ['groups' => 'oneCategory']);
+        return $this->json($category, 200, [], ['groups' => 'category']);
     }
     #[IsGranted("ROLE_ADMIN")]
     #[Route('/add', name: 'app_add_category', methods: ['POST'])]

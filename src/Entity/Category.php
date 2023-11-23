@@ -14,15 +14,15 @@ class Category
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups('allSubCategories')]
+    #[Groups('category')]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['allSubCategories', 'oneSubCategory', 'allCategories', 'oneCategory'])]
+    #[Groups(['subCategory', 'category'])]
     private ?string $categoryName = null;
 
     #[ORM\OneToMany(mappedBy: 'category', targetEntity: SubCategory::class)]
-    #[Groups('allCategories', 'oneCategory')]
+    #[Groups('category')]
     private Collection $subCategories;
 
     public function __construct()
