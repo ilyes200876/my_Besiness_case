@@ -69,7 +69,7 @@ class ApiNftController extends AbstractController
       return $this->json($nft, 200, [], ['groups' => 'nft']);
     }
 
-    #[IsGranted("Role_User")]
+    #[IsGranted("ROLE_USER")]
     #[Route('/add', name: 'app_add_nft', methods: ['POST'])]
     public function add(Request $request, SerializerInterface $serializer , 
     UserRepository $userRepository,SubCategoryRepository $subCategoryRepository): JsonResponse 
@@ -80,7 +80,7 @@ class ApiNftController extends AbstractController
 
 
       $nft = new Nft();
-      $nft->setCreatedAt(new \DateTime($data["createdAt"]));
+      $nft->setCreatedAt(new \DateTime());
       $nft->setPrice($data["price"]);
       $nft->setDescription($data["description"]);
       $nft->setFormat($data["format"]);

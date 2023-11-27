@@ -18,7 +18,7 @@ class SubCategory
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['nft', 'category', 'subCategory'])]
+    #[Groups(['nft', 'category', 'subCategory', 'user'])]
     private ?string $subCategoryName = null;
 
     #[ORM\ManyToMany(targetEntity: Nft::class, mappedBy: 'subCategories')]

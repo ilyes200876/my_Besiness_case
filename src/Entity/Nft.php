@@ -31,15 +31,15 @@ class Nft
 
 
     #[ORM\ManyToMany(targetEntity: SubCategory::class, inversedBy: 'nfts')]
-    #[Groups(['allNfts', 'oneNft'])]
+    #[Groups(['nft', 'user'])]
     private Collection $subCategories;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['nft', 'subCategory'])]
+    #[Groups(['nft', 'subCategory', 'user'])]
     private ?string $title = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['nft', 'subCategory'])]
+    #[Groups(['nft', 'subCategory', 'user'])]
     private ?string $src = null;
 
     #[ORM\Column(nullable: true)]
@@ -51,7 +51,7 @@ class Nft
     private ?string $format = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Groups(['nft', 'subCategory'])]
+    #[Groups(['nft', 'subCategory', 'user'])]
     private ?string $description = null;
 
     public function __construct()
