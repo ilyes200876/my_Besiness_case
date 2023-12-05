@@ -77,6 +77,16 @@ class RegistrationFormType extends AbstractType
                     ]),
                 ],
             ])
+            ->add('profilePic', TextType::class, [
+                'constraints' => [
+                    new Length([
+                        'min' =>20,
+                        'minMessage' => 'Your nickname should be at least {{ limit }} characters',
+                        // max length allowed by Symfony for security reasons
+                        'max' => 250,
+                    ]),
+                ],
+            ])
             ->add('gender',ChoiceType::class ,[
                 'choices'  => [
                     'Male' =>'male',

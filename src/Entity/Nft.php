@@ -42,13 +42,6 @@ class Nft
     #[Groups(['nft', 'subCategory', 'user'])]
     private ?string $src = null;
 
-    #[ORM\Column(nullable: true)]
-    #[Groups(['nft', 'subCategory'])]
-    private ?int $weight = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['nft', 'subCategory'])]
-    private ?string $format = null;
 
     #[ORM\Column(type: Types::TEXT)]
     #[Groups(['nft', 'subCategory', 'user'])]
@@ -150,29 +143,6 @@ class Nft
         return $this;
     }
 
-    public function getWeight(): ?int
-    {
-        return $this->weight;
-    }
-
-    public function setWeight(?int $weight): static
-    {
-        $this->weight = $weight;
-
-        return $this;
-    }
-
-    public function getFormat(): ?string
-    {
-        return $this->format;
-    }
-
-    public function setFormat(?string $format): static
-    {
-        $this->format = $format;
-
-        return $this;
-    }
 
     public function getDescription(): ?string
     {

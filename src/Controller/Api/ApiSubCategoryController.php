@@ -45,14 +45,17 @@ class ApiSubCategoryController extends AbstractController
     {
         $data = json_decode($request->getContent(), true);
 
-        $categoryId = $data["categoryId"];
+        $categoryId = $data["category"]["id"];
         $category = $categoryRepository->find($categoryId);
         
         $subCategory = new SubCategory();
         
-        
-        $subCategory->setSubCategoryName($data['subCategoryName']);
-        $subCategory->setCategory($category);
+        if(isset($data['subCategoryName'])){
+            $subCategory->setSubCategoryName($data['subCategoryName']);
+        }
+        if(isset($data['category']['id'])){
+            $subCategory->setCategory($category);
+        }
 
         try{
             $this->entityManager->persist($subCategory);

@@ -50,17 +50,17 @@ class ApiUserController extends AbstractController
 
         $address = new Address();
 
-        if (isset($data['country'])) {
-            $address->setCountry($data['country']);
+        if (isset($data['address']['country'])) {
+            $address->setCountry($data['address']['country']);
         }
-        if (isset($data['department'])) {
-            $address->setDepartment($data['department']);
+        if (isset($data['address']['department'])) {
+            $address->setDepartment($data['address']['department']);
         }
-        if (isset($data['street'])) {
-            $address->setStreet($data['street']);
+        if (isset($data['address']['street'])) {
+            $address->setStreet($data['address']['street']);
         }
-        if (isset($data['zipCode'])) {
-            $address->setZipCode($data['zipCode']);
+        if (isset($data['address']['zipCode'])) {
+            $address->setZipCode($data['address']['zipCode']);
         }
         $user = new User();
         if(isset($data['firstName'])) {
@@ -75,7 +75,7 @@ class ApiUserController extends AbstractController
         if(isset($data["email"])){
             $user->setEmail($data["email"]);
         }
-        if(isset($dat['birthDate'])){
+        if(isset($data['birthDate'])){
             $user->setBirthDate(new \DateTime($data["birthDate"]));
         }
         if(isset($data['nickname'])){
@@ -91,7 +91,7 @@ class ApiUserController extends AbstractController
             $user->setPassword($hashedPassword);
         }
         if(isset($data["profilePic"])){
-            $user->setProfilePic($data["profilePic "]);
+            $user->setProfilePic($data["profilePic"]);
         }
         
         $user->setAddress($address);

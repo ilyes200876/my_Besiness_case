@@ -4,11 +4,16 @@ namespace App\Controller\Api;
 
 
 use App\Entity\Nft;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\String\Slugger\SluggerInterface;
 use App\Entity\SubCategory;
 use App\Entity\User;
 use App\Repository\NftRepository;
 use App\Repository\SubCategoryRepository;
 use App\Repository\UserRepository;
+use App\Service\FileUploader;
+use App\Service\FileUploaderApi;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -25,7 +30,8 @@ class ApiNftController extends AbstractController
 {
     public function __construct(
         private NftRepository $nftRepository,
-        private EntityManagerInterface $entityManager
+        private EntityManagerInterface $entityManager,
+        private ParameterBagInterface $parameterBag
     ){}
 
     #[Route('/', name: 'app_all_nft', methods: ['GET'])]
@@ -72,31 +78,50 @@ class ApiNftController extends AbstractController
     #[IsGranted("ROLE_USER")]
     #[Route('/add', name: 'app_add_nft', methods: ['POST'])]
     public function add(Request $request, SerializerInterface $serializer , 
-    UserRepository $userRepository,SubCategoryRepository $subCategoryRepository): JsonResponse 
+    UserRepository $userRepository,SubCategoryRepository $subCategoryRepository, FileUploaderApi $fileUploader, TokenInterface $token
+    ,SluggerInterface $slugger): JsonResponse 
     {
       $data = json_decode($request->getContent(), true);
 
-      $user = $userRepository->find($data["user"]);
+   
+
+      $file = $request->files->get('file');
+      return $this->json($file);
 
 
-      $nft = new Nft();
-      $nft->setCreatedAt(new \DateTime());
-      $nft->setPrice($data["price"]);
-      $nft->setDescription($data["description"]);
-      $nft->setFormat($data["format"]);
-      $nft->setSrc($data["src"]);
-      $nft->setTitle($data["title"]);
-      $nft->setWeight($data["weight"]);
-      $nft->setUser($user);
-      $subCategories = [];
-      for($i = 0 ; $i<count($data["subCategories"]); $i++){
-        $subCategories[] = $subCategoryRepository->findBy(["id" => $data["subCategories"][$i]]);
-        $nft->addSubCategory($subCategories[$i][0]);
-      }
-
+      $user = $token->getUser();
+      
+      
       try{
+        $nft = $fileUploader->upload($file);
+  
+        $nft->setCreatedAt(new \DateTime());
+        if (isset($data['price'])){
+          $nft->setPrice($data["price"]);
+        }
+        if (isset($data['description'])){
+          $nft->setDescription($data["description"]);
+        }
+  
+        if (isset($data['title'])){
+          $nft->setTitle($data["title"]);
+        }
+        
+        $nft->setUser($user);
+  
+        for($i = 0 ; $i<count($data["subCategories"]); $i++){
+          $subCategory = $subCategoryRepository->findOneBy(["id" => $data["subCategories"][$i]]);
+          // if(isset($data['subCategories']['id'])){
+            $nft->addSubCategory($subCategory);
+          // }
+        }  
+  
+        $uploadDirectory = $this->parameterBag->get("image_directory");
+
+        $file->move($uploadDirectory , $file);
         $this->entityManager->persist($nft);
         $this->entityManager->flush();
+
       return $this->json("Nft Added with Success", 201);
       }
       catch(\Exception $e){

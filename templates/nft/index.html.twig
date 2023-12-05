@@ -13,8 +13,6 @@
                 <th>CreatedAt</th>
                 <th>Title</th>
                 <th>Src</th>
-                <th>Weight</th>
-                <th>Format</th>
                 <th>Description</th>
                 <th>actions</th>
             </tr>
@@ -27,8 +25,6 @@
                 <td>{{ nft.createdAt ? nft.createdAt|date('Y-m-d H:i:s') : '' }}</td>
                 <td>{{ nft.title }}</td>
                 <td>{{ nft.src }}</td>
-                <td>{{ nft.weight }}</td>
-                <td>{{ nft.format }}</td>
                 <td>{{ nft.description }}</td>
                 <td>
                     <a href="{{ path('app_nft_show', {'id': nft.id}) }}">show</a>

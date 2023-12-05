@@ -67,6 +67,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?Address $address = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['user'])]
     private ?string $profilePic = null;
 
     public function __construct()

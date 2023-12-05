@@ -20,8 +20,6 @@ class NftType extends AbstractType
                 'widget' => 'single_text'
             ])
             ->add('title')
-            ->add('weight')
-            ->add('format')
             ->add('description')
             ->add('user')
             ->add('subCategories')
