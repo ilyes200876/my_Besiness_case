@@ -54,10 +54,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['user'])]
     private ?\DateTimeInterface $birthDate = null;
 
-    #[ORM\Column(nullable: true)]
-    #[Groups(['user'])]
-    private ?bool $isOwner = null;
-
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Nft::class)]
     #[Groups(['user'])]
     private Collection $nfts;
@@ -201,18 +197,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setBirthDate(\DateTimeInterface $birthDate): static
     {
         $this->birthDate = $birthDate;
-
-        return $this;
-    }
-
-    public function isIsOwner(): ?bool
-    {
-        return $this->isOwner;
-    }
-
-    public function setIsOwner(?bool $isOwner): static
-    {
-        $this->isOwner = $isOwner;
 
         return $this;
     }

@@ -7,19 +7,19 @@ use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use Symfony\Component\Validator\Constraints\Date;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 
 class FileUploaderApi
 {
   public function __construct(
-    private string $targetDirectory,
     private SluggerInterface $slugger,
     private ParameterBagInterface $parameterBag,
+    private TokenInterface $token
 
   ) {
   }
 
-  public function upload(UploadedFile $file): Nft
+  public function upload(UploadedFile $file, string $title, string $description, int $price): Nft
   {
     $uploadDirectory = $this->parameterBag->get('image_directory');
     $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
@@ -31,19 +31,17 @@ class FileUploaderApi
       $fileName
   );
 
+  $user = $this->token->getUser();
+
   $nft = new Nft();
   $nft->setSrc($fileName);
-  // $nft->setTitle($title);
-  // $nft->setDescription($description);
-  // $nft->setCreatedAt($createdAt);
+  $nft->setTitle($title);
+  $nft->setDescription($description);
+  $nft->setCreatedAt(new \DateTime());
+  $nft->setPrice($price);
+  $nft->setUser($user);
 
     return $nft;
   }
 
-
-
-  public function getTargetDirectory(): string
-  {
-    return $this->targetDirectory;
-  }
 }
