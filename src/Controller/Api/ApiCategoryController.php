@@ -22,7 +22,7 @@ class ApiCategoryController extends AbstractController
     ){}
 
     #[Route('/', name: 'app_all_categogy', methods: ['GET'])]
-    public function index(): Response
+    public function showAll(): Response
     {
         
         $categories = $this->categoryRepository->findAll();
@@ -32,7 +32,7 @@ class ApiCategoryController extends AbstractController
     }
 
     #[Route('/show/{id}', name: 'app_show_categogy', methods: ['GET'])]
-    public function show(int $id): Response
+    public function showOne(int $id): Response
     {
         $category = $this->categoryRepository->find($id);
 

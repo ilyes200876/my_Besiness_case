@@ -22,7 +22,7 @@ class ApiAddressController extends AbstractController
     ){}
 
     #[Route('/', name: 'app_all_adsress', methods: ['GET'])]
-    public function index(): Response
+    public function showAll(): Response
     {
         
         $address = $this->addressRepository->findAll();
@@ -32,7 +32,7 @@ class ApiAddressController extends AbstractController
     }
 
     #[Route('/show/{id}', name: 'app_show_address', methods: ['GET'])]
-    public function show(int $id): Response
+    public function showOne(int $id): Response
     {
         $address = $this->addressRepository->find($id);
 

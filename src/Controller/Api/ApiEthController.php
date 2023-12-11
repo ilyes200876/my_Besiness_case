@@ -11,7 +11,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class ApiEthController extends AbstractController
 {
     #[Route('/', name: 'app_api_eth', methods: ['GET'])]
-    public function index(EthRepository  $ethRepository): Response
+    public function show(EthRepository  $ethRepository): Response
     {
         $eths = $ethRepository->findQbAll()
             ->setMaxResults(7)

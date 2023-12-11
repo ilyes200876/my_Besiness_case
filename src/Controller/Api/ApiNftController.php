@@ -30,7 +30,7 @@ class ApiNftController extends AbstractController
     ){}
 
     #[Route('/', name: 'app_all_nft', methods: ['GET'])]
-    public function index(Request $request): Response
+    public function showAll(Request $request): Response
     {
       $subCategoryName = $request->query->get("sn");
       $nftTitle = $request->query->get("t");
@@ -64,7 +64,7 @@ class ApiNftController extends AbstractController
     }
 
     #[Route('/show/{id}', name: 'app_show_nft', methods: ['GET'])]
-    public function show(int $id): Response
+    public function showOne(int $id): Response
     {
       $nft = $this->nftRepository->find($id);
       return $this->json($nft, 200, [], ['groups' => 'nft']);
@@ -132,9 +132,11 @@ class ApiNftController extends AbstractController
       $nft->setTitle($data["title"]);
       $nft->setUser($userConnected);
       for($i = 0 ; $i<count($data["subCategories"]); $i++){
-        $subCategories[] = $subCategoryRepository->findBy(["id" => $data["subCategories"][$i]]);
-        $nft->addSubCategory($subCategories[$i][0]);
-      }
+        $subCategory = $subCategoryRepository->findOneBy(["id" => $data["subCategories"][$i]]);
+        if(isset($subCategory)){
+          $nft->addSubCategory($subCategory);
+        }
+      } 
 
       if(!$nft){
         return $this->json("Nft not found", 400);

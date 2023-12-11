@@ -27,7 +27,7 @@ class ApiUserController extends AbstractController
     ){}
 
     #[Route('/', name: 'app_all_user', methods: ['GET'])]
-    public function index(): Response
+    public function showAll(): Response
     {
         $users = $this->userRepository->findAll();
 
@@ -36,7 +36,7 @@ class ApiUserController extends AbstractController
     }
 
     #[Route('/show/{id}', name: 'app_show_user', methods: ['GET'])]
-    public function show(int $id): Response
+    public function showOne(int $id): Response
     {
         $user = $this->userRepository->find($id);
 

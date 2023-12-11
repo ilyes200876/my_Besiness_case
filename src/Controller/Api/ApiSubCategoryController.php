@@ -23,7 +23,7 @@ class ApiSubCategoryController extends AbstractController
     ){}
 
     #[Route('/', name: 'app_all_subCategogy', methods: ['GET'])]
-    public function index(): Response
+    public function showAll(): Response
     {
         $subCategories = $this->subCategoryRepository->findAll();
 
@@ -33,7 +33,7 @@ class ApiSubCategoryController extends AbstractController
     }
 
     #[Route('/show/{id}', name: 'app_show_subCategogy', methods: ['GET'])]
-    public function show(int $id): Response
+    public function showOne(int $id): Response
     {
         $subCategory = $this->subCategoryRepository->find($id);
 
